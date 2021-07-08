@@ -89,7 +89,11 @@ class AuthServiceProvider extends ServiceProvider
             }
             return app(AnonymousUser::class);
         });
-
+	Auth::provider('ucn', function ($app, array $config) {
+	    Log::debug("Creating new UCNUserProvider");
+            return new UCNUserProvider($config['model']);
+        });
+	
     }
 
 }
