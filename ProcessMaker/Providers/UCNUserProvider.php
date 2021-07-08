@@ -4,22 +4,30 @@ namespace ProcessMaker\Providers;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
-use Illuminate\Contracts\Hashing\Hasher as HasherContract;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Contracts\Hashing\Hasher as HasherContract;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Auth\EloquentUserProvider;
+
+use ProcessMaker\Model\User;
 
 use InvalidArgumentException;
 
-class UCNUserProvider implements UserProvider
-{
-    protected $hasher;
-    protected $model;
+define('DEFAULT_UCN_GROUP', 4);
 
-    public function __construct($model)
+class UCNUserProvider extends EloquentUserProvider //implements UserProvider
+{
+    protected $model;
+    protected $hasher;
+
+    public function __construct(HasherContract $hasher, $model)
     {
+	parent::__construct($hasher, $model);
+
         $this->model = $model;
-	// throw new InvalidArgumentException("p=".app('path.storage'));
+	$this->hasher = $hasher;
+	//throw new InvalidArgumentException("hash=".$this->app['hash']); //"p=".app('path.storage'));
     }
 
     public function createModel()
@@ -28,6 +36,7 @@ class UCNUserProvider implements UserProvider
 
         return new $class;
     }
+
     protected function newModelQuery($model = null)
     {
         return is_null($model)
@@ -37,7 +46,7 @@ class UCNUserProvider implements UserProvider
 
     public function retrieveById($identifier)
     {
-	    Log::info('retrieveById(' . $identifier . ')');
+	Log::info('retrieveById(' . $identifier . ')');
 
 	$model = $this->createModel();
 
@@ -48,11 +57,12 @@ class UCNUserProvider implements UserProvider
 
     public function retrieveByToken($identifier, $token)
     {
-	    Log::info('retrieveByToken(' . $identifier . ', ' . $token . ')');
+	Log::info('retrieveByToken(' . $identifier . ', ' . $token . ')');
 
 	throw new InvalidArgumentException("retrieveByToken");
-	    return null;
+	return null;
     }
+    
     public function updateRememberToken(Authenticatable $user, $token)
     {
 	    
@@ -63,7 +73,7 @@ class UCNUserProvider implements UserProvider
 
     public function retrieveByCredentials(array $credentials) // username password
     {
-	    Log::info('retrieveByCredentials: ' . print_r($credentials, true));
+	Log::info('retrieveByCredentials: ' . print_r($credentials, true));
 
         if (empty($credentials) ||
            (count($credentials) === 1 &&
@@ -100,8 +110,14 @@ class UCNUserProvider implements UserProvider
 			"email" => $credentials['username'] . "@ucn.cl",
 			"password" => ""
 		]);
+
 		Log::debug("saving new user");
 		$user->save();
+
+		Log::debug("sync groups for new user");
+		$user->groups()->sync([ DEFAULT_UCN_GROUP ]);
+	} else {
+		Log::debug("current groups: " . print_r($user->groups()->pluck('groups.id'), true));
 	}
 
 	Log::debug("Returning user");
@@ -127,6 +143,9 @@ class UCNUserProvider implements UserProvider
 		$user->save();
 		return true;
 	}
+
+	Log::debug("Using EloquentUserProvider::validateCredentials");
+	return parent::validateCredentials($user, $credentials);
 
 	return false;
 	throw new InvalidArgumentException("result=" . print_r($result === false ? "FALSO" : $result, true));
