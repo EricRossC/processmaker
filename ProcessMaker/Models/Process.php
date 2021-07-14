@@ -38,7 +38,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Throwable;
-
+use Illuminate\Support\Facades\Log;
 /**
  * Represents a business process definition.
  *
@@ -557,7 +557,8 @@ class Process extends Model implements HasMedia, ProcessModelInterface
      */
     private function getNextUserFromVariable($activity, $token)
     {
-        $userExpression = $activity->getProperty('assignedUsers');
+	$userExpression = $activity->getProperty('assignedUsers');
+	Log::info('getNextUserFromVariable userExpression=' . $userExpression);
 
         $dataManager = new DataManager();
         $instanceData = $dataManager->getData($token);
@@ -567,7 +568,13 @@ class Process extends Model implements HasMedia, ProcessModelInterface
 
         $user = User::find($userId);
         if (!$user) {
-            throw new InvalidUserAssignmentException($userExpression, $userId);
+	    Log::info('getNextUserFromVariable did not find user by id ' . $userId);
+	    $user = User::where('username', $userId)->first();
+            if (!$user) {
+		Log::info('getNextUserFromVariable did not find user by username ' . $userId);
+                throw new InvalidUserAssignmentException($userExpression, $userId);
+	    }
+	    Log::info('getNextUserFromVariable found by username ' . $userId);
         }
         return $user->id;
     }
