@@ -90,6 +90,13 @@ class AuthServiceProvider extends ServiceProvider
             return app(AnonymousUser::class);
         });
 
+	// https://stackoverflow.com/questions/41912867/can-i-put-and-retrieve-the-user-information-to-and-from-session-into-a-laravel-c
+	Auth::provider('ucn', function ($app, array $config) {
+		Log::debug("Creating new UCNUserProvider");
+		return new UCNUserProvider($this->app['hash']->driver(), $config['model']);
+	});
+
+
     }
 
 }

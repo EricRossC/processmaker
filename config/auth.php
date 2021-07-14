@@ -59,7 +59,7 @@ return [
     */
     'providers' => [
         'users' => [
-            'driver' => 'eloquent',
+            'driver' => 'ucn', // eloquent ucn
             'model' => ProcessMaker\Models\User::class
         ]
     ],
