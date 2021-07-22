@@ -71,12 +71,6 @@ class LoginController extends Controller
             // Getting intended deletes it, so put in back
             $request->session()->put('url.intended', $intended);
         }
-        
-        // Check the status of the user
-        $user = User::where('username', $request->input('username'))->firstOrFail();
-        if ($user->status === 'INACTIVE') {
-            return redirect()->back();
-        }
 
         $addons = $this->getPluginAddons('command', []);
         foreach($addons as $addon) {
@@ -86,7 +80,16 @@ class LoginController extends Controller
             }
         }
 
-        return $this->login($request);
+        $login = $this->login($request);
+
+        if (!is_null($login)) {
+		// // Check the status of the user
+		// $user = User::where('username', $request->input('username'))->firstOrFail();
+		// if ($user->status === 'INACTIVE') {
+		//     return redirect()->back();
+		// }
+	}
+	return $login;
     }
 
     /**
