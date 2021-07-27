@@ -25,7 +25,7 @@ class ProfileController extends Controller
         $status = [__('ACTIVE'), __('INACTIVE')];
 
         $langs = ['en'];
-        if (app()->getProvider(\ProcessMaker\Package\Translations\PackageServiceProvider::class)) {
+        if (true || app()->getProvider(\ProcessMaker\Package\Translations\PackageServiceProvider::class)) {
             $langs = i18nHelper::availableLangs();
         }
         // Our form controls need attribute:value pairs sot we convert the langs array to and associative one
