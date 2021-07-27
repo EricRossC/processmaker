@@ -66,7 +66,7 @@ return [
                 env('APP_URL', 'http://localhost'))),
 
     // Allows our script executors to ignore invalid SSL. This should only be set to false for development.
-    'api_ssl_verify' => env('API_SSL_VERIFY', "true"),
+    'api_ssl_verify' => false, //env('API_SSL_VERIFY', "true"),
 
     // Unique name on multi-tenant installations. Just use the DB name for now
     'instance' => env('DB_DATABASE'),
