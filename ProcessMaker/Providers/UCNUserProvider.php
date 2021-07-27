@@ -46,9 +46,9 @@ class UCNUserProvider extends EloquentUserProvider //implements UserProvider
 
     public function retrieveById($identifier)
     {
-       Log::info('retrieveById(' . $identifier . ')');
-
        $model = $this->createModel();
+       Log::info('retrieveById(' . $identifier . ' getAuthIdentifierName:' . $model->getAuthIdentifierName() .')');
+
 
        return $this->newModelQuery($model)
                ->where($model->getAuthIdentifierName(), $identifier)
