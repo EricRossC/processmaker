@@ -8,7 +8,7 @@ use ProcessMaker\Providers\RouteServiceProvider;
 
 return [
     // The name of our application
-    'name' => env('APP_NAME', 'ProcessMaker'),
+    'name' => 'Workflow Curricular UCN', //env('APP_NAME', 'Workflow Curriculares'),
 
     // The url of our host, will usually be set during installation
     'url' => env('APP_URL', 'http://localhost'),
