@@ -42,7 +42,7 @@ class ActivityActivatedNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['broadcast', 'database'];
+        return ['broadcast', 'database', 'mail'];
     }
 
     /**
@@ -53,10 +53,25 @@ class ActivityActivatedNotification extends Notification
      */
     public function toMail($notifiable)
     {
+        $process = Process::find($this->processUid); //->name
+        $definitions = $process->getDefinitions();
+        $activity = $definitions->getActivity($this->tokenElement);
+        $token = Token::find($this->tokenUid);
+	$request = $token->processRequest;
+
+	$title = sprintf('Tarea creada: %s', $activity->getName());
+	$ts = $token->created_at->toIso8601String();
+	$url = sprintf('/tasks/%s/edit', $token->id);
+	$url = url(route('tasks.edit', [ 'task' => $token->id ], false));
+
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
+	    ->subject($title)
+	    ->greeting('¡Hola persona!')
+	    ->line('Se ha creado la tarea "' . $activity->getName() . '" con fecha ' . $ts . ' como parte de la solicitud "'. $request->name .'"')
+	    //->line(print_r($request, true))
+	    ->action('Ir a la tarea', $url)
+	    ->salutation('Atentamente,<br/>Workflow Curricular')
+	    ;
     }
 
     /**
