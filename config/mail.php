@@ -13,7 +13,7 @@ return [
     |            "processmakerpost", "log", "array"
     |
     */
-    'driver' => env('MAIL_DRIVER', 'log'),
+    'driver' => env('MAIL_DRIVER', 'sendmail'), // was log
     /*
     |--------------------------------------------------------------------------
     | SMTP Host Address
@@ -47,8 +47,8 @@ return [
     |
     */
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'admin@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'ProcessMaker'),
+        'address' => env('MAIL_FROM_ADDRESS', 'wfdgpre@ucn.cl'),
+        'name' => env('MAIL_FROM_NAME', 'WorkflowCurricular'),
     ],
     /*
     |--------------------------------------------------------------------------
